@@ -1,0 +1,29 @@
+html {
+    box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+.row {
+    display: block;
+    white-space: nowrap;
+    height: 40px;
+}
+
+.cell {
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+    padding: 8px;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+
+.cell:last-child {
+    border-right: 1px solid black;
+}
+
+.row:last-child > .cell {
+    border-bottom: 1px solid black;
+}
