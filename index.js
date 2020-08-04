@@ -17,6 +17,14 @@ function init() {
     }
 }
 
+// Clears contents of root element and forces re-creation of elements.
+const redraw = () => {
+    // Clear contents of root element;
+    const root = document.getElementById('root');
+    root.innerHTML = '';
+    init();
+}
+
 
 // Note that Rows and Columns are indexed from 1.
 const createRow = (rowId, isHeaderRow = false) => {
