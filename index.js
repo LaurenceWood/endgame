@@ -1,6 +1,8 @@
 const ROW_COUNT = 100;
 const COLUMN_COUNT = 100;
 
+const VALUES = Array(ROW_COUNT).fill().map(() => []);
+
 function init() {
     const root = document.getElementById('root');
 
@@ -17,26 +19,26 @@ function init() {
 
 
 // Note that Rows and Columns are indexed from 1.
-const createRow = (id, isHeaderRow = false) => {
-    const row = createDiv({ id: `row-${id}`, className: 'row' });
+const createRow = (rowId, isHeaderRow = false) => {
+    const row = createDiv({ id: `row-${rowId}`, className: 'row' });
 
     // Side header cell.
     const headerCell = createDiv({ 
         id: 'cell-header',
         className: 'cell header header-column',
-        content: isHeaderRow ? '-' : id
+        content: isHeaderRow ? '-' : rowId
     })
     row.appendChild(headerCell);
     
     // Columns.
-    for (let i = 0; i <= COLUMN_COUNT; i++) {
-        const columnId = toAlphaId(i);
+    for (let colId = 1; colId <= COLUMN_COUNT; colId++) {
+        const columnId = toAlphaId(colId - 1);
 
         const cell = createDiv({
             id: `cell-${columnId}`,
             className: isHeaderRow ? 'cell header header-row' : 'cell',
             content: isHeaderRow ? columnId : undefined,
-            handleInput: (e) => console.log('!! input', e),
+            handleInput: cellInputHandler(rowId, colId),
             editable: !isHeaderRow,
         })
         row.appendChild(cell);
@@ -67,6 +69,13 @@ const createDiv = (options = {}) => {
     }
 
     return div;
+}
+
+const cellInputHandler = (row, col) => (e) => {
+    const value = e?.srcElement?.textContent
+    VALUES[row - 1][col - 1] = value; // 0-based arrays vs 1-based grid.
+
+    console.log(`!! Updated value for row ${row} column ${col}:`, value);
 }
 
 
