@@ -2,11 +2,13 @@ const ROW_COUNT = 100;
 const COLUMN_COUNT = 100;
 
 const VALUES = Array(ROW_COUNT).fill().map(() => []);
+const getCell = (row, col) => VALUES[row - 1][col - 1];
+const setCell = (row, col, value) => VALUES[row - 1][col - 1] = value;
 
 let root;
 const getRoot = () => root || (root = document.getElementById('root'));
 
-function init() {
+const init = () => {
     // Top header row.
     const row = createRow('header', true);
     getRoot().appendChild(row);
@@ -16,6 +18,8 @@ function init() {
         const row = createRow(i);
         getRoot().appendChild(row);
     }
+
+    console.info('Initialised sheet.');
 }
 
 // Clears contents of root element and forces re-creation of elements.
@@ -45,7 +49,7 @@ const createRow = (rowId, isHeaderRow = false) => {
         const cell = createDiv({
             id: `cell-${columnId}`,
             className: isHeaderRow ? 'cell header header-row' : 'cell',
-            content: isHeaderRow ? columnId : literalCellValue(rowId, colId),
+            content: isHeaderRow ? columnId : resolveCellValue(rowId, colId),
             handleInput: cellInputHandler(rowId, colId),
             editable: !isHeaderRow,
         })
@@ -79,14 +83,40 @@ const createDiv = (options = {}) => {
 }
 
 const cellInputHandler = (row, col) => (e) => {
-    const value = e?.srcElement?.textContent
-    VALUES[row - 1][col - 1] = value; // 0-based arrays vs 1-based grid.
+    const value = e?.srcElement?.textContent;
+    setCell(row, col, value);
 
     console.log(`!! Updated value for row ${row} column ${col}:`, value);
 }
 
-const literalCellValue = (row, col) => VALUES[row - 1][col - 1];
+/**
+ * Resolves a cell value for display or further calculations. 
+ */
+const resolveCellValue = (row, col) => {
+    const rawValue = getCell(row, col);
 
+    if (!rawValue) {
+        return rawValue;
+    }
+    if (simpleOperationRegex.test(rawValue)) {
+        return simpleOperationValue(rawValue);
+    }
+    // Follow established pattern here to support functions.
+
+    return rawValue;
+}
+
+const simpleOperationValue = (rawValue) => {
+    const [ref1, operator, ref2] = rawValue.matchAll(simpleOperationRegex);
+    if (!ref1 || !operator || !ref2) {
+        return rawValue;
+    }
+
+    // Decode ref1 and ref2 from AlphaId to Row/Column & get resolved values.
+    // Switch on supported 'operand' values & return calculated result.
+    
+    throw new Error('Not implemented');
+}
 
 /**
  * Converts a number to an 'excel-like' alphabetical representation.
@@ -96,3 +126,7 @@ const literalCellValue = (row, col) => VALUES[row - 1][col - 1];
 const toAlphaId = (num) => (num < 26) 
     ? String.fromCharCode(65 + num)
     : toAlphaId(Math.floor(num / 26) - 1) + toAlphaId(num % 26);
+
+// Three match groups: Cell/Operation/Cell.
+const simpleOperationRegex = /^=([a-zA-Z]+[\d]+)([\+\-\*\/]+)([a-zA-Z]+[\d]+)/;
+
