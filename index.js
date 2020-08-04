@@ -3,25 +3,25 @@ const COLUMN_COUNT = 100;
 
 const VALUES = Array(ROW_COUNT).fill().map(() => []);
 
-function init() {
-    const root = document.getElementById('root');
+let root;
+const getRoot = () => root || (root = document.getElementById('root'));
 
+function init() {
     // Top header row.
     const row = createRow('header', true);
-    root.appendChild(row);
+    getRoot().appendChild(row);
 
     // Create rows, indexed from 1.
     for (let i = 1; i <= ROW_COUNT; i++) {
         const row = createRow(i);
-        root.appendChild(row);
+        getRoot().appendChild(row);
     }
 }
 
 // Clears contents of root element and forces re-creation of elements.
 const redraw = () => {
     // Clear contents of root element;
-    const root = document.getElementById('root');
-    root.innerHTML = '';
+    getRoot().innerHTML = '';
     init();
 }
 
@@ -45,7 +45,7 @@ const createRow = (rowId, isHeaderRow = false) => {
         const cell = createDiv({
             id: `cell-${columnId}`,
             className: isHeaderRow ? 'cell header header-row' : 'cell',
-            content: isHeaderRow ? columnId : undefined,
+            content: isHeaderRow ? columnId : literalCellValue(rowId, colId),
             handleInput: cellInputHandler(rowId, colId),
             editable: !isHeaderRow,
         })
@@ -66,8 +66,7 @@ const createDiv = (options = {}) => {
         div.className = className;
     }
     if (content !== undefined) {
-        const inner = document.createTextNode(content);
-        div.appendChild(inner);
+        div.textContent = content;
     }
     if (handleInput !== undefined) {
         div.addEventListener('input', handleInput);
@@ -85,6 +84,8 @@ const cellInputHandler = (row, col) => (e) => {
 
     console.log(`!! Updated value for row ${row} column ${col}:`, value);
 }
+
+const literalCellValue = (row, col) => VALUES[row - 1][col - 1];
 
 
 /**
