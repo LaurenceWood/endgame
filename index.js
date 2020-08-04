@@ -66,15 +66,10 @@ const createDiv = (options = {}) => {
 
 
 /**
- * Converts a number to an 'excel like' alphabetical representation.
- *  e.g. 1-26 to A-Z, 27-56 to AA-AZ.
- *  NOTE: This is not a general case solution and only supports values up to ZZ.
+ * Converts a number to an 'excel-like' alphabetical representation.
+ *  e.g. 0-25 to A-Z, 26-55 to AA-AZ.
+ *  Simple recursive solution resolves & concatenates individual digits.
  */
-const toAlphaId = (num) => {
-    if (num >= 26 * 27) {
-        throw new Error('Invalid argument: cannot convert alpha ID beyond ZZ.');
-    }
-    return (num < 26) 
-        ? String.fromCharCode(65 + num)
-        : String.fromCharCode(65 - 1 + num / 26) + toAlphaId(num % 26);
-}
+const toAlphaId = (num) => (num < 26) 
+    ? String.fromCharCode(65 + num)
+    : toAlphaId(Math.floor(num / 26) - 1) + toAlphaId(num % 26);
