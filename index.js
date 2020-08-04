@@ -4,8 +4,12 @@ const COLUMN_COUNT = 100;
 function init() {
     const root = document.getElementById('root');
 
-    // Create rows.
-    for (let i = 0; i < ROW_COUNT; i++) {
+    // Top header row.
+    const row = createRow('header', true);
+    root.appendChild(row);
+
+    // Create rows, indexed from 1.
+    for (let i = 1; i <= ROW_COUNT; i++) {
         const row = createRow(i);
         root.appendChild(row);
     }
@@ -14,27 +18,46 @@ function init() {
     document.querySelectorAll('.cell').forEach(div => div.contentEditable = true);
 }
 
-// Note that Rows and Columns are indexed from 0.
-const createRow = (number) => {
-    const row = createDiv(`row-${number}`, { className: 'row' });
 
-    for (let i = 0; i < COLUMN_COUNT; i++) {
-        const column = toAlphaId(i);
-        const cell = createDiv(`cell-${column}`, { className: 'cell'})
+// Note that Rows and Columns are indexed from 1.
+const createRow = (id, isHeaderRow = false) => {
+    const row = createDiv({ id: `row-${id}`, className: 'row' });
+
+    // Side header cell.
+    const headerCell = createDiv({ 
+        id: 'cell-header',
+        className: 'cell header header-column',
+        content: isHeaderRow ? undefined : id
+    })
+    row.appendChild(headerCell);
+    
+    // Columns.
+    for (let i = 0; i <= COLUMN_COUNT; i++) {
+        const columnId = toAlphaId(i);
+
+        const cell = createDiv({
+            id: `cell-${columnId}`,
+            className: isHeaderRow ? 'cell header header-row' : 'cell',
+            content: isHeaderRow ? columnId : undefined
+        })
         row.appendChild(cell);
     }
 
     return row;
 }
 
-const createDiv = (id, options = {}) => {
-    const { className, contentString } = options;
+const createDiv = (options = {}) => {
+    const { id, className, content } = options;
     const div = document.createElement('div');
 
-    if (id) { div.id = id };
-    if (className) { div.className = className; }
-    if (contentString) {
-        const inner = document.createTextNode(contentString);
+    if (id !== undefined) {
+        div.id = id
+    };
+    if (className !== undefined) {
+        div.className = className;
+    }
+    if (content !== undefined) {
+        const inner = document.createTextNode(content);
         div.appendChild(inner);
     }
 
