@@ -16,12 +16,15 @@ html {
     width: 100px;
     height: 100%;
     padding: 8px;
+    font-family: Helvetica, sans-serif;
     border-top: 1px solid black;
     border-left: 1px solid black;
 }
 
 .header {
     background: #DDDDDD;
+    user-select: none;
+    font-weight: 600;
 }
 
 .header-row {

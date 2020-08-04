@@ -13,9 +13,6 @@ function init() {
         const row = createRow(i);
         root.appendChild(row);
     }
-
-    // Set cells as editable.
-    document.querySelectorAll('.cell').forEach(div => div.contentEditable = true);
 }
 
 
@@ -27,7 +24,7 @@ const createRow = (id, isHeaderRow = false) => {
     const headerCell = createDiv({ 
         id: 'cell-header',
         className: 'cell header header-column',
-        content: isHeaderRow ? undefined : id
+        content: isHeaderRow ? '-' : id
     })
     row.appendChild(headerCell);
     
@@ -38,7 +35,9 @@ const createRow = (id, isHeaderRow = false) => {
         const cell = createDiv({
             id: `cell-${columnId}`,
             className: isHeaderRow ? 'cell header header-row' : 'cell',
-            content: isHeaderRow ? columnId : undefined
+            content: isHeaderRow ? columnId : undefined,
+            handleInput: (e) => console.log('!! input', e),
+            editable: !isHeaderRow,
         })
         row.appendChild(cell);
     }
@@ -47,7 +46,7 @@ const createRow = (id, isHeaderRow = false) => {
 }
 
 const createDiv = (options = {}) => {
-    const { id, className, content } = options;
+    const { id, className, content, handleInput, editable } = options;
     const div = document.createElement('div');
 
     if (id !== undefined) {
@@ -59,6 +58,12 @@ const createDiv = (options = {}) => {
     if (content !== undefined) {
         const inner = document.createTextNode(content);
         div.appendChild(inner);
+    }
+    if (handleInput !== undefined) {
+        div.addEventListener('input', handleInput);
+    }
+    if (editable) {
+        div.contentEditable = true;
     }
 
     return div;
